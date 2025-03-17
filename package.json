@@ -1,0 +1,85 @@
+{
+  "name": "prompt-helper",
+  "displayName": "PrompT-Helper",
+  "description": "在Cursor中按照项目开发流程引用预置角色提示词辅助项目开发",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "publisher": "your-publisher-name",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "prompt-helper.insertPrompt",
+        "title": "插入角色提示词"
+      },
+      {
+        "command": "prompt-helper.projectWorkflow",
+        "title": "启动项目开发流程"
+      },
+      {
+        "command": "prompt-helper.openDevFlowGuide",
+        "title": "打开项目流程引导器"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "prompt-helper",
+          "title": "角色提示词",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "prompt-helper": [
+        {
+          "id": "promptRoles",
+          "name": "角色列表"
+        },
+        {
+          "id": "promptWorkflows",
+          "name": "开发流程"
+        },
+        {
+          "id": "promptHelper.devFlowGuide",
+          "name": "流程引导器",
+          "type": "webview"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "prompt-helper.projectWorkflow",
+          "when": "view == promptWorkflows",
+          "group": "navigation"
+        },
+        {
+          "command": "prompt-helper.openDevFlowGuide",
+          "when": "view == promptHelper.devFlowGuide",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "standard-project": {
+    "steps": [
+      {
+        "id": "requirements-analysis",
+        "name": "需求分析",
+        "description": "明确项目目标和功能需求",
+        "recommendedRoles": ["1-产品经理角色提示词"],
+        "outputArtifacts": ["需求文档", "用户故事"]
+      },
+      {
+        "id": "architecture-design",
+        "name": "架构设计",
+        "description": "设计系统架构和技术方案",
+        "recommendedRoles": ["2-系统架构师角色提示词"],
+        "outputArtifacts": ["架构文档", "技术方案"]
+      },
+      {
+        "id": "development",
+        "name": "开发实现",
+        "description": "编写代码实现功能",
+        "recommendedRoles": ["6-0-后端开发工程师角色提示词", "5-1-Web前端开发工程师角色提示词"],
+        "outputArtifacts": ["源代码", "API文档"]
+      },
+      {
+        "id": "testing",
+        "name": "测试验证",
+        "description": "测试功能和性能",
+        "recommendedRoles": ["7-测试工程师角色提示词"],
+        "outputArtifacts": ["测试报告", "Bug列表"]
+      }
+    ]
+  },
+  "frontend-project": {
+    "steps": [
+      {
+        "id": "requirements-analysis",
+        "name": "需求分析",
+        "description": "明确前端项目的目标和功能需求",
+        "recommendedRoles": ["1-产品经理角色提示词"],
+        "outputArtifacts": ["需求文档", "用户故事"]
+      },
+      {
+        "id": "ui-design",
+        "name": "UI设计",
+        "description": "设计用户界面和交互流程",
+        "recommendedRoles": ["3-UI设计师角色提示词"],
+        "outputArtifacts": ["界面原型", "设计规范"]
+      },
+      {
+        "id": "frontend-development",
+        "name": "前端开发",
+        "description": "实现前端界面和交互",
+        "recommendedRoles": ["5-1-Web前端开发工程师角色提示词"],
+        "outputArtifacts": ["前端代码", "组件库"]
+      }
+    ]
+  },
+  "vscode-plugin": {
+    "steps": [
+      {
+        "id": "requirements-analysis",
+        "name": "需求分析",
+        "description": "明确VSCode插件的目标和功能需求",
+        "recommendedRoles": ["1-产品经理角色提示词", "9-2-VSCode插件开发工程师角色提示词"],
+        "outputArtifacts": ["需求文档", "功能列表"]
+      },
+      {
+        "id": "plugin-design",
+        "name": "插件设计",
+        "description": "设计插件架构和功能模块",
+        "recommendedRoles": ["9-2-VSCode插件开发工程师角色提示词", "2-系统架构师角色提示词"],
+        "outputArtifacts": ["架构文档", "API设计"]
+      },
+      {
+        "id": "plugin-development",
+        "name": "插件开发",
+        "description": "实现插件功能",
+        "recommendedRoles": ["9-2-VSCode插件开发工程师角色提示词"],
+        "outputArtifacts": ["插件源码", "package.json"]
+      }
+    ]
+  },
+  "browser-extension": {
+    "steps": [
+      {
+        "id": "requirements-analysis",
+        "name": "需求分析",
+        "description": "明确浏览器插件的目标和功能需求",
+        "recommendedRoles": ["1-产品经理角色提示词", "9-1-浏览器插件开发工程师角色提示词"],
+        "outputArtifacts": ["需求文档", "功能列表"]
+      },
+      {
+        "id": "extension-design",
+        "name": "插件设计",
+        "description": "设计插件架构和功能模块",
+        "recommendedRoles": ["9-1-浏览器插件开发工程师角色提示词", "2-系统架构师角色提示词"],
+        "outputArtifacts": ["架构文档", "API设计"]
+      },
+      {
+        "id": "extension-development",
+        "name": "插件开发",
+        "description": "实现插件功能",
+        "recommendedRoles": ["9-1-浏览器插件开发工程师角色提示词", "5-1-Web前端开发工程师角色提示词"],
+        "outputArtifacts": ["插件源码", "manifest.json"]
+      }
+    ]
+  }
+} 

@@ -1,0 +1,123 @@
+{
+  "workflows": [
+    {
+      "id": "standard-project",
+      "name": "标准项目开发流程",
+      "description": "从需求分析到实现的标准项目开发流程",
+      "steps": [
+        {
+          "id": "step-1",
+          "name": "需求分析",
+          "role": "1-产品经理角色提示词",
+          "description": "分析用户需求，定义产品功能",
+          "contextVars": ["userIdea"]
+        },
+        {
+          "id": "step-2",
+          "name": "架构设计",
+          "role": "2-系统架构师角色提示词",
+          "description": "设计系统整体架构和技术方案",
+          "contextVars": ["requirementsOutput"]
+        },
+        {
+          "id": "step-3",
+          "name": "开发实现",
+          "role": "6-0-后端开发工程师角色提示词",
+          "description": "编写代码实现功能",
+          "contextVars": ["designOutput", "requirementsOutput"]
+        },
+        {
+          "id": "step-4",
+          "name": "测试验证",
+          "role": "7-测试工程师角色提示词",
+          "description": "测试功能和性能",
+          "contextVars": ["previousStepOutput", "requirementsOutput"]
+        }
+      ]
+    },
+    {
+      "id": "frontend-project",
+      "name": "前端项目开发流程",
+      "description": "从需求到前端实现的专用流程",
+      "steps": [
+        {
+          "id": "step-1",
+          "name": "需求分析",
+          "role": "1-产品经理角色提示词",
+          "description": "分析用户需求，定义产品功能",
+          "contextVars": ["userIdea"]
+        },
+        {
+          "id": "step-2",
+          "name": "UI设计",
+          "role": "3-UI设计师角色提示词",
+          "description": "设计用户界面和交互",
+          "contextVars": ["requirementsOutput"]
+        },
+        {
+          "id": "step-3",
+          "name": "前端实现",
+          "role": "5-1-Web前端开发工程师角色提示词",
+          "description": "编写前端代码实现功能",
+          "contextVars": ["designOutput", "requirementsOutput"]
+        }
+      ]
+    },
+    {
+      "id": "vscode-plugin",
+      "name": "VSCode插件开发流程",
+      "description": "VSCode插件开发的专用流程",
+      "steps": [
+        {
+          "id": "step-1",
+          "name": "需求分析",
+          "role": "1-产品经理角色提示词",
+          "description": "分析插件需求和目标用户",
+          "contextVars": ["userIdea"]
+        },
+        {
+          "id": "step-2",
+          "name": "插件设计",
+          "role": "9-2-VSCode插件开发工程师角色提示词",
+          "description": "设计插件架构和功能模块",
+          "contextVars": ["requirementsOutput"]
+        },
+        {
+          "id": "step-3",
+          "name": "插件实现",
+          "role": "9-2-VSCode插件开发工程师角色提示词",
+          "description": "编写插件代码和配置",
+          "contextVars": ["designOutput", "requirementsOutput"]
+        }
+      ]
+    },
+    {
+      "id": "browser-extension",
+      "name": "浏览器插件开发流程",
+      "description": "浏览器插件开发的专用流程",
+      "steps": [
+        {
+          "id": "step-1",
+          "name": "需求分析",
+          "role": "1-产品经理角色提示词",
+          "description": "分析插件需求和目标用户",
+          "contextVars": ["userIdea"]
+        },
+        {
+          "id": "step-2",
+          "name": "插件设计",
+          "role": "9-1-浏览器插件开发工程师角色提示词",
+          "description": "设计插件架构和功能模块",
+          "contextVars": ["requirementsOutput"]
+        },
+        {
+          "id": "step-3",
+          "name": "插件实现",
+          "role": "9-1-浏览器插件开发工程师角色提示词",
+          "description": "编写插件代码和配置",
+          "contextVars": ["designOutput", "requirementsOutput"]
+        }
+      ]
+    }
+  ]
+} 
