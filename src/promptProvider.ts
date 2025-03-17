@@ -52,6 +52,8 @@ export class PromptProvider implements vscode.TreeDataProvider<PromptTreeItem> {
     '7-': '测试',
     '8-': 'DevOps',
     '9-': '工具开发',
+    '10-': 'AI专家',
+    '11-': '代码质量',
   };
 
   constructor(private extensionPath: string) {
