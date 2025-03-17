@@ -280,7 +280,22 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
             const prevStep = workflow.steps[currentStepIndex - 1];
             if (prevStep) {
               const prevRoleName = this._getRoleNameFromId(prevStep.role);
-              const prevRoleDirPath = roleDirPaths[prevRoleName];
+              
+              // 在roleDirPaths中查找与prevRoleName匹配的键
+              let prevRoleDirPath = roleDirPaths[prevRoleName];
+              
+              // 如果未找到对应的路径，尝试遍历所有键，使用包含关系查找
+              if (!prevRoleDirPath) {
+                const roleKeys = Object.keys(roleDirPaths);
+                for (const key of roleKeys) {
+                  // 移除roleKey中可能存在的数字前缀，再比较
+                  const cleanKey = key.replace(/^\d+-\d+-/, '').replace(/^\d+-/, '');
+                  if (cleanKey === prevRoleName || prevRoleName.includes(cleanKey) || cleanKey.includes(prevRoleName)) {
+                    prevRoleDirPath = roleDirPaths[key];
+                    break;
+                  }
+                }
+              }
               
               if (prevRoleDirPath) {
                 dirPathInfo += `\n\n目录'${prevRoleDirPath}'下的文件为${prevRoleName}给出的输出件，请你作为${currentRoleName}，仔细阅读相关文档，根据这些内容继续你的工作。\n`;
@@ -390,7 +405,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
         
         // 即使输出路径为空字符串也记录
         // 生成一个描述性文本作为步骤输出
-        const stepDescription = `${roleName}已完成${currentStep.name}，输出件位于${outputDirPath || '根目录'}`;
+        const stepDescription = `${roleName}已完成${currentStep.name}，输出件位于${outputDirPath || '根目录'}。请你根据${roleName}的输出，按照规范要求，完成你的工作。`;
         
         // 存储描述
         userOutput[`${currentStep.id}_output`] = stepDescription;
