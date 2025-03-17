@@ -6,7 +6,7 @@ const outputChannel = vscode.window.createOutputChannel('Prompt-Helper ');
 /**
  * 记录日志到输出通道
  */
-function log(message: string, showInUI: boolean = false) {
+export function log(message: string, showInUI: boolean = false) {
   const timestamp = new Date().toISOString();
   const logMessage = `[${timestamp}] ${message}`;
   outputChannel.appendLine(logMessage);
@@ -73,5 +73,36 @@ export async function insertPromptToChat(content: string): Promise<void> {
     
     // 重新抛出错误
     throw error;
+  }
+}
+
+/**
+ * 从角色ID中提取角色名称
+ * 例如：从"9-2-VSCode插件开发工程师角色提示词"提取"VSCode插件开发工程师"
+ * @param roleId 角色ID
+ * @returns 提取后的角色名称
+ */
+export function extractRoleNameFromId(roleId: string): string {
+  // 移除数字前缀 (例如 "9-2-")
+  let roleName = roleId.replace(/^\d+-\d+-/, '').replace(/^\d+-/, '');
+  
+  // 移除"角色提示词"后缀
+  roleName = roleName.replace(/角色提示词$/, '');
+  
+  return roleName;
+}
+
+/**
+ * 统一处理错误并显示错误消息
+ * @param error 错误对象
+ * @param message 错误消息前缀
+ * @param showToUser 是否显示给用户
+ */
+export function handleError(error: any, message: string, showToUser: boolean = true): void {
+  const errorMessage = `${message}: ${error}`;
+  log(errorMessage, true);
+  
+  if (showToUser) {
+    vscode.window.showErrorMessage(errorMessage);
   }
 } 
