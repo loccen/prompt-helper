@@ -1,6 +1,6 @@
-# PrompT-Helper
+# Prompt-Helper
 
-PrompT-Helper是一款为Cursor编辑器开发的插件，旨在帮助开发者通过预置角色提示词能够更好的利用AI完成项目开发流程。
+Prompt-Helper是一款为Cursor编辑器开发的插件，旨在帮助开发者通过预置角色提示词能够更好的利用AI完成项目开发流程。
 
 ## 功能特点
 
@@ -12,14 +12,14 @@ PrompT-Helper是一款为Cursor编辑器开发的插件，旨在帮助开发者�
 
 ## 使用方法
 
-1. 在Cursor编辑器中安装PrompT-Helper插件
-2. 点击侧边栏的PrompT-Helper图标，查看可用的角色提示词和开发流程
+1. 在Cursor编辑器中安装Prompt-Helper插件
+2. 点击侧边栏的Prompt-Helper图标，查看可用的角色提示词和开发流程
 3. 在角色分类中选择一个角色提示词，点击后会自动插入到Cursor的聊天窗口中
 4. 或者选择一个开发流程，输入你的项目想法，插件会引导你完成整个开发过程
 
 ## 角色分类体系
 
-PrompT-Helper将角色提示词按照以下分类组织：
+Prompt-Helper将角色提示词按照以下分类组织：
 
 ### 管理角色
 - **产品经理**：负责需求分析、功能设计和产品规划
