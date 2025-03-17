@@ -7,7 +7,7 @@ import { DevFlowGuideProvider } from './devFlowGuideProvider';
 import { insertPromptToChat } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('PrompT-Helper 插件已激活');
+  console.log('Prompt-Helper  插件已激活');
 
   // 创建提示词和工作流提供者
   const promptProvider = new PromptProvider(context.extensionPath);
@@ -112,5 +112,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  console.log('PrompT-Helper 插件已停用');
+  console.log('Prompt-Helper  插件已停用');
 } 

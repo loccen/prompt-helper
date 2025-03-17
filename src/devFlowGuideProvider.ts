@@ -646,7 +646,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
     <body>
       <h1>项目开发流程引导</h1>
       ${errorMessage ? `<div class="error">${errorMessage}</div>` : ''}
-      <p>欢迎使用PrompT-Helper的项目开发流程引导。请选择一个开发流程开始:</p>
+      <p>欢迎使用Prompt-Helper 的项目开发流程引导。请选择一个开发流程开始:</p>
       
       <div class="flow-card" onclick="selectFlow('standard-project')">
         <h3>标准项目开发流程</h3>

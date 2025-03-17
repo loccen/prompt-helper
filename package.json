@@ -1,6 +1,6 @@
 {
   "name": "prompt-helper",
-  "displayName": "PrompT-Helper",
+  "displayName": "Prompt-Helper ",
   "description": "在Cursor中按照项目开发流程引用预置角色提示词辅助项目开发",
   "version": "0.1.0",
   "engines": {
