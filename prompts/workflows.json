@@ -118,6 +118,48 @@
           "contextVars": ["designOutput", "requirementsOutput"]
         }
       ]
+    },
+    {
+      "id": "desktop-app",
+      "name": "桌面应用开发流程",
+      "description": "基于Tauri的跨平台桌面应用开发流程",
+      "steps": [
+        {
+          "id": "step-1",
+          "name": "需求分析",
+          "role": "1-产品经理角色提示词",
+          "description": "分析桌面应用需求和目标用户",
+          "contextVars": ["userIdea"]
+        },
+        {
+          "id": "step-2",
+          "name": "架构设计",
+          "role": "2-系统架构师角色提示词",
+          "description": "设计桌面应用整体架构和技术方案",
+          "contextVars": ["requirementsOutput"]
+        },
+        {
+          "id": "step-3",
+          "name": "UI设计",
+          "role": "3-2-桌面应用UI设计师角色提示词",
+          "description": "设计桌面应用界面和交互体验",
+          "contextVars": ["requirementsOutput", "designOutput"]
+        },
+        {
+          "id": "step-4",
+          "name": "Tauri应用开发",
+          "role": "6-8-桌面应用-Tauri工程师角色提示词",
+          "description": "使用Tauri框架实现桌面应用功能",
+          "contextVars": ["requirementsOutput", "designOutput"]
+        },
+        {
+          "id": "step-5",
+          "name": "测试验证",
+          "role": "7-测试工程师角色提示词",
+          "description": "测试桌面应用功能和性能",
+          "contextVars": ["previousStepOutput", "requirementsOutput"]
+        }
+      ]
     }
   ]
 } 
