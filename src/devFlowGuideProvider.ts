@@ -48,13 +48,20 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
   // 流程步骤映射数据
   private _flowStepsMapping: Record<string, { steps: IFlowStep[] }> = {};
   
+  // 存储键名前缀
+  private readonly STORAGE_KEY_PREFIX = 'promptHelper.flowState';
+  
   constructor(
     private readonly _extensionUri: vscode.Uri,
     private readonly _promptProvider: PromptProvider,
-    private readonly _workflowProvider: WorkflowProvider
+    private readonly _workflowProvider: WorkflowProvider,
+    private readonly _context: vscode.ExtensionContext
   ) {
     this._flowStepsMappingFile = path.join(this._extensionUri.fsPath, 'data', 'flow-steps-mapping.json');
     this._loadFlowStepsMapping();
+    
+    // 尝试从持久化存储恢复状态
+    this._restoreFlowState();
   }
   
   /**
@@ -71,8 +78,25 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       ]
     };
     
-    // 初始首页内容
-    webviewView.webview.html = this._getWelcomePageHtml();
+    // 尝试从持久化存储恢复状态
+    this._restoreFlowState();
+    
+    // 根据当前状态决定显示欢迎页还是步骤页
+    if (this._flowState.flowId) {
+      // 已有活动流程，尝试恢复显示
+      this._workflowProvider.getWorkflows().then(workflows => {
+        const workflow = workflows.find(wf => wf.id === this._flowState.flowId);
+        if (workflow) {
+          this._updateFlowView(workflow);
+        } else {
+          // 找不到对应工作流，显示欢迎页
+          webviewView.webview.html = this._getWelcomePageHtml();
+        }
+      });
+    } else {
+      // 初始首页内容
+      webviewView.webview.html = this._getWelcomePageHtml();
+    }
     
     // 处理来自WebView的消息
     webviewView.webview.onDidReceiveMessage(message => {
@@ -128,6 +152,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       
       // 更新项目上下文
       this._flowState.projectContext.userIdea = userIdea;
+      
+      // 持久化保存状态
+      this._persistFlowState();
       
       // 获取流程数据并更新视图
       const workflows = await this._workflowProvider.getWorkflows();
@@ -215,6 +242,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       // 构建上下文附加信息
       let contextInfo = '';
       
+      // 获取当前角色名称
+      const currentRoleName = this._getRoleNameFromId(roleId);
+      
       // 如果是当前步骤的角色，添加上下文变量内容
       if (currentStep && currentStep.role === roleId && currentStep.contextVars) {
         for (const varName of currentStep.contextVars) {
@@ -237,6 +267,48 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
               default:
                 contextInfo += `\n\n${varName}：${varValue}\n`;
             }
+          }
+        }
+        
+        // 处理前一步骤的输出目录信息
+        const roleDirPaths = this._flowState.projectContext['roleDirPaths'] as Record<string, string>;
+        if (roleDirPaths && typeof roleDirPaths === 'object') {
+          let dirPathInfo = '';
+          
+          // 如果是流程中第二步及以后的步骤，添加输出件目录信息
+          if (currentStepIndex > 0) {
+            const prevStep = workflow.steps[currentStepIndex - 1];
+            if (prevStep) {
+              const prevRoleName = this._getRoleNameFromId(prevStep.role);
+              const prevRoleDirPath = roleDirPaths[prevRoleName];
+              
+              if (prevRoleDirPath) {
+                dirPathInfo += `\n\n目录'${prevRoleDirPath}'下的文件为${prevRoleName}给出的输出件，请你作为${currentRoleName}，仔细阅读相关文档，根据这些内容继续你的工作。\n`;
+              }
+            }
+          }
+          
+          // 如果当前步骤需要参考多个之前步骤的输出
+          if (currentStep.contextVars && currentStep.contextVars.length > 1) {
+            for (const varName of currentStep.contextVars) {
+              // 查找是否有对应的角色目录路径
+              if (varName !== 'userIdea' && varName !== 'previousStepOutput') {
+                const roleName = varName.replace('Output', ''); // 例如 requirementsOutput -> requirements
+                
+                // 遍历已有的角色目录，找到可能相关的角色
+                for (const [existingRoleName, dirPath] of Object.entries(roleDirPaths)) {
+                  if (existingRoleName.toLowerCase().includes(roleName.toLowerCase()) && 
+                      !dirPathInfo.includes(dirPath)) {
+                    dirPathInfo += `\n\n目录'${dirPath}'下的文件为${existingRoleName}提供的相关文档，请参考这些内容。\n`;
+                  }
+                }
+              }
+            }
+          }
+          
+          // 添加目录信息到上下文
+          if (dirPathInfo) {
+            contextInfo += dirPathInfo;
           }
         }
       }
@@ -285,64 +357,123 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
         throw new Error('当前没有活动步骤');
       }
       
-      // 更新完成状态
-      if (!this._flowState.completedSteps.includes(currentStep.id)) {
-        this._flowState.completedSteps.push(currentStep.id);
+      // 如果步骤已完成且用户没有提供新输出，询问是否要编辑
+      if (this._flowState.completedSteps.includes(currentStep.id) && Object.keys(output).length === 0) {
+        const action = await vscode.window.showQuickPick(
+          ['修改输出路径', '取消'],
+          { placeHolder: '此步骤已完成，您想要做什么？' }
+        );
+        
+        if (!action || action === '取消') {
+          return;
+        }
+        // 如果用户选择修改，继续后续逻辑
       }
       
-      // 如果用户没有提供输出，尝试获取用户输入
+      // 如果用户没有提供输出，获取输出件目录路径
       if (Object.keys(output).length === 0) {
-        const stepOutput = await vscode.window.showInputBox({
-          prompt: `请输入此步骤(${currentStep.name})的主要输出或结论`,
-          placeHolder: '例如: 已完成需求分析，确定了核心功能包括...'
+        // 获取输出目录路径
+        const outputDirPath = await vscode.window.showInputBox({
+          prompt: `请输入此步骤(${currentStep.name})的输出件目录路径（相对于项目根目录）`,
+          placeHolder: '例如: docs/产品经理, src/designs 等',
+          ignoreFocusOut: true // 防止用户切换窗口导致对话框关闭
         });
         
-        if (stepOutput) {
-          // 使用步骤ID作为键，存储步骤输出
-          output[`${currentStep.id}_output`] = stepOutput;
-          
-          // 根据步骤类型，添加特定的上下文变量
-          switch(currentStep.id) {
-            case 'step-1':
-            case 'requirements-analysis':
-              output['requirementsOutput'] = stepOutput;
-              break;
-            case 'step-2':
-            case 'architecture-design':
-            case 'ui-design':
-            case 'plugin-design':
-            case 'extension-design':
-              output['designOutput'] = stepOutput;
-              break;
-            default:
-              // 其他步骤使用通用输出变量
-              output['previousStepOutput'] = stepOutput;
-          }
+        // 如果用户取消了输入，直接返回
+        if (outputDirPath === undefined) {
+          return;
         }
+        
+        // 创建输出对象
+        const userOutput: Record<string, any> = {};
+        const roleName = this._getRoleNameFromId(currentStep.role);
+        
+        // 即使输出路径为空字符串也记录
+        // 生成一个描述性文本作为步骤输出
+        const stepDescription = `${roleName}已完成${currentStep.name}，输出件位于${outputDirPath || '根目录'}`;
+        
+        // 存储描述
+        userOutput[`${currentStep.id}_output`] = stepDescription;
+        
+        // 根据步骤类型，添加特定的上下文变量
+        switch(currentStep.id) {
+          case 'step-1':
+          case 'requirements-analysis':
+            userOutput['requirementsOutput'] = stepDescription;
+            break;
+          case 'step-2':
+          case 'architecture-design':
+          case 'ui-design':
+          case 'plugin-design':
+          case 'extension-design':
+            userOutput['designOutput'] = stepDescription;
+            break;
+          default:
+            // 其他步骤使用通用输出变量
+            userOutput['previousStepOutput'] = stepDescription;
+        }
+        
+        // 存储目录路径
+        userOutput[`${currentStep.id}_dirPath`] = outputDirPath;
+        userOutput[`${roleName}_dirPath`] = outputDirPath;
+        
+        // 更新角色目录路径映射
+        const existingRoleDirPaths = (this._flowState.projectContext['roleDirPaths'] as Record<string, string>) || {};
+        userOutput['roleDirPaths'] = {
+          ...existingRoleDirPaths,
+          [roleName]: outputDirPath
+        };
+        
+        // 更新输出对象
+        output = userOutput;
       }
       
-      // 更新项目上下文
-      this._flowState.projectContext = {
-        ...this._flowState.projectContext,
-        ...output,
-        // 始终提供当前步骤信息
-        currentStepName: currentStep.name,
-        currentStepId: currentStep.id,
-        stepIndex: currentStepIndex.toString()
-      };
-      
-      // 显示上下文信息（调试用）
-      console.log('项目上下文已更新:', this._flowState.projectContext);
-      
-      // 更新视图
-      this._updateFlowView(workflow);
-      
-      // 显示成功消息
-      vscode.window.showInformationMessage(`已完成当前步骤: ${currentStep.name}`);
+      // 仅当有有效输出时才更新状态
+      if (Object.keys(output).length > 0) {
+        // 更新完成状态
+        if (!this._flowState.completedSteps.includes(currentStep.id)) {
+          this._flowState.completedSteps.push(currentStep.id);
+        }
+        
+        // 更新项目上下文
+        this._flowState.projectContext = {
+          ...this._flowState.projectContext,
+          ...output,
+          // 始终提供当前步骤信息
+          currentStepName: currentStep.name,
+          currentStepId: currentStep.id,
+          stepIndex: currentStepIndex.toString()
+        };
+        
+        // 持久化保存状态
+        this._persistFlowState();
+        
+        // 显示上下文信息（调试用）
+        console.log('项目上下文已更新:', this._flowState.projectContext);
+        
+        // 更新视图
+        this._updateFlowView(workflow);
+        
+        // 显示成功消息
+        vscode.window.showInformationMessage(`已完成当前步骤: ${currentStep.name}`);
+      }
       
     } catch (error) {
       vscode.window.showErrorMessage(`完成步骤失败: ${error}`);
     }
+  }
+  
+  /**
+   * 从角色ID中提取角色名称
+   */
+  private _getRoleNameFromId(roleId: string): string {
+    // 移除数字前缀 (例如 "9-2-")
+    let roleName = roleId.replace(/^\d+-\d+-/, '').replace(/^\d+-/, '');
+    
+    // 移除"角色提示词"后缀
+    roleName = roleName.replace(/角色提示词$/, '');
+    
+    return roleName;
   }
   
   /**
@@ -368,6 +499,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       
       // 更新步骤索引
       this._flowState.currentStepIndex++;
+      
+      // 持久化保存状态
+      this._persistFlowState();
       
       // 更新视图
       this._updateFlowView(workflow);
@@ -400,6 +534,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       // 更新步骤索引
       this._flowState.currentStepIndex--;
       
+      // 持久化保存状态
+      this._persistFlowState();
+      
       // 更新视图
       this._updateFlowView(workflow);
       
@@ -412,6 +549,24 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
    * 重置当前流程
    */
   private _resetFlow(): void {
+    // 清空当前流程状态
+    this._flowState = {
+      flowId: '',
+      currentStepIndex: 0,
+      projectContext: {},
+      completedSteps: []
+    };
+    
+    // 持久化保存状态（清空）
+    try {
+      const storageKey = this._getStorageKey();
+      this._context.workspaceState.update(storageKey, this._flowState);
+      console.log(`已清空流程状态: ${storageKey}`);
+    } catch (error) {
+      console.error('清空流程状态失败:', error);
+    }
+    
+    // 重置视图
     this._view!.webview.html = this._getWelcomePageHtml();
   }
   
@@ -423,6 +578,15 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       ...this._flowState.projectContext,
       ...context
     };
+    
+    // 持久化保存状态
+    try {
+      const storageKey = this._getStorageKey();
+      this._context.workspaceState.update(storageKey, this._flowState);
+      console.log(`已更新项目上下文: ${storageKey}`);
+    } catch (error) {
+      console.error('更新项目上下文失败:', error);
+    }
   }
   
   /**
@@ -734,8 +898,14 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
         }
         .step-nav {
           display: flex;
-          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 10px;
           margin: 20px 0;
+        }
+        .step-nav-group {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
         }
         .roles-container {
           margin-top: 24px;
@@ -825,11 +995,11 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       </div>
       
       <div class="step-nav">
-        <div>
+        <div class="step-nav-group">
           ${currentStepIndex > 0 ? `<button onclick="prevStep()">上一步</button>` : ''}
           ${!isCompleted ? `<button onclick="completeStep()">标记为已完成</button>` : ''}
         </div>
-        <div>
+        <div class="step-nav-group">
           ${currentStepIndex < totalSteps - 1 ? `<button onclick="nextStep()">下一步</button>` : ''}
           <button class="secondary" onclick="restartFlow()">重新开始</button>
         </div>
@@ -995,5 +1165,60 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       </script>
     </body>
     </html>`;
+  }
+  
+  /**
+   * 生成当前工作区的唯一存储键
+   * 使用工作区文件夹路径作为唯一标识
+   */
+  private _getStorageKey(): string {
+    let workspaceId = 'default';
+    
+    // 获取当前工作区文件夹路径作为唯一ID
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+      workspaceId = vscode.workspace.workspaceFolders[0].uri.fsPath;
+      
+      // 对路径进行简单处理避免特殊字符
+      workspaceId = workspaceId.replace(/[^a-zA-Z0-9]/g, '_');
+    }
+    
+    return `${this.STORAGE_KEY_PREFIX}.${workspaceId}`;
+  }
+  
+  /**
+   * 将流程状态持久化保存
+   */
+  private _persistFlowState(): void {
+    try {
+      // 获取当前工作区的存储键
+      const storageKey = this._getStorageKey();
+      
+      // 将状态保存到工作区状态存储
+      this._context.workspaceState.update(storageKey, this._flowState);
+      
+      console.log(`已保存流程状态到: ${storageKey}`);
+    } catch (error) {
+      console.error('保存流程状态失败:', error);
+    }
+  }
+  
+  /**
+   * 从持久化存储恢复流程状态
+   */
+  private _restoreFlowState(): void {
+    try {
+      // 获取当前工作区的存储键
+      const storageKey = this._getStorageKey();
+      
+      // 从工作区状态存储中获取保存的状态
+      const savedState = this._context.workspaceState.get<IFlowState>(storageKey);
+      
+      if (savedState) {
+        console.log(`已恢复流程状态从: ${storageKey}`);
+        this._flowState = savedState;
+      }
+    } catch (error) {
+      console.error('恢复流程状态失败:', error);
+    }
   }
 } 

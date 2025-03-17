@@ -17,7 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
   const devFlowGuideProvider = new DevFlowGuideProvider(
     context.extensionUri,
     promptProvider,
-    workflowProvider
+    workflowProvider,
+    context
   );
 
   // 注册角色提示词视图
