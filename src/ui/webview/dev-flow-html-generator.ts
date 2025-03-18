@@ -392,7 +392,12 @@ export class DevFlowHtmlGenerator {
    * @param relativePath 相对路径
    */
   public getResourceUri(relativePath: string): vscode.Uri {
-    // 使用VSCode官方推荐的方式获取WebView资源URI
-    return vscode.Uri.joinPath(this.extensionUri, relativePath);
+    if (!this._webview) {
+      throw new Error('Webview实例未设置，请先调用setWebview方法');
+    }
+    // 先获取本地文件URI
+    const localUri = vscode.Uri.joinPath(this.extensionUri, relativePath);
+    // 转换为WebView可访问的URI
+    return this._webview.asWebviewUri(localUri);
   }
 }
