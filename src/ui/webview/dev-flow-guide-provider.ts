@@ -41,6 +41,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
     webviewView.webview.options = { 
       enableScripts: true,
       localResourceRoots: [
+        vscode.Uri.joinPath(this._extensionUri, 'resources'),
         vscode.Uri.joinPath(this._extensionUri, 'media')
       ]
     };
@@ -140,7 +141,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       return;
     }
     
-    const styleMainUri = this._htmlGenerator.getResourceUri('media/styles.css');
+    const styleMainUri = this._htmlGenerator.getResourceUri('resources/media/styles.css');
     
     this._view.webview.html = `
       <!DOCTYPE html>

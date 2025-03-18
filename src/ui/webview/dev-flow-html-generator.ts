@@ -18,7 +18,7 @@ export class DevFlowHtmlGenerator {
    */
   getWelcomePageHtml(workflows: IWorkflow[], errorMessage?: string): string {
     // 获取CSS和JS资源URI
-    const styleMainUri = this.getResourceUri('media/styles.css');
+    const styleMainUri = this.getResourceUri('resources/media/styles.css');
     
     // 构建工作流卡片HTML
     const workflowCardsHtml = workflows.map(workflow => {
@@ -130,7 +130,7 @@ export class DevFlowHtmlGenerator {
     roleCardsHtml: string
   ): Promise<string> {
     // 获取CSS和JS资源URI
-    const styleMainUri = this.getResourceUri('media/styles.css');
+    const styleMainUri = this.getResourceUri('resources/media/styles.css');
     
     // 计算进度百分比
     const progressPercent = Math.round((currentStepIndex / (totalSteps - 1)) * 100);
@@ -288,7 +288,7 @@ export class DevFlowHtmlGenerator {
    */
   getFlowCompletionHtml(workflow: IWorkflow): string {
     // 获取CSS和JS资源URI
-    const styleMainUri = this.getResourceUri('media/styles.css');
+    const styleMainUri = this.getResourceUri('resources/media/styles.css');
     
     return `
       <!DOCTYPE html>
