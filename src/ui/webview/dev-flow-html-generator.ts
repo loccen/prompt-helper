@@ -8,15 +8,29 @@ import { extractRoleNameFromId } from '../../utils';
  * 负责生成各种页面的HTML
  */
 export class DevFlowHtmlGenerator {
+  private _webview?: vscode.Webview;
+
   constructor(
     private readonly extensionUri: vscode.Uri
   ) {}
+
+  /**
+   * 设置Webview实例
+   * @param webview Webview实例
+   */
+  public setWebview(webview: vscode.Webview): void {
+    this._webview = webview;
+  }
 
   /**
    * 获取欢迎页面HTML
    * @param errorMessage 错误消息
    */
   getWelcomePageHtml(workflows: IWorkflow[], errorMessage?: string): string {
+    if (!this._webview) {
+      throw new Error('Webview实例未设置，请先调用setWebview方法');
+    }
+
     // 获取CSS和JS资源URI
     const styleMainUri = this.getResourceUri('media/styles.css');
     
@@ -63,7 +77,7 @@ export class DevFlowHtmlGenerator {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; img-src vscode-resource: https:;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this._webview.cspSource} 'unsafe-inline'; img-src ${this._webview.cspSource} https:; script-src 'unsafe-inline';">
         <title>开发流程引导器</title>
         <link rel="stylesheet" href="${styleMainUri}">
       </head>
@@ -130,6 +144,10 @@ export class DevFlowHtmlGenerator {
     isCompleted: boolean,
     roleCardsHtml: string
   ): Promise<string> {
+    if (!this._webview) {
+      throw new Error('Webview实例未设置，请先调用setWebview方法');
+    }
+
     // 获取CSS和JS资源URI
     const styleMainUri = this.getResourceUri('media/styles.css');
     
@@ -148,7 +166,7 @@ export class DevFlowHtmlGenerator {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; img-src vscode-resource: https:; script-src 'unsafe-inline';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this._webview.cspSource} 'unsafe-inline'; img-src ${this._webview.cspSource} https:; script-src 'unsafe-inline';">
         <title>开发流程引导器</title>
         <link rel="stylesheet" href="${styleMainUri}">
       </head>
@@ -289,6 +307,10 @@ export class DevFlowHtmlGenerator {
    * @param workflow 工作流
    */
   getFlowCompletionHtml(workflow: IWorkflow): string {
+    if (!this._webview) {
+      throw new Error('Webview实例未设置，请先调用setWebview方法');
+    }
+
     // 获取CSS和JS资源URI
     const styleMainUri = this.getResourceUri('media/styles.css');
     
@@ -298,7 +320,7 @@ export class DevFlowHtmlGenerator {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; img-src vscode-resource: https:; script-src 'unsafe-inline';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this._webview.cspSource} 'unsafe-inline'; img-src ${this._webview.cspSource} https:; script-src 'unsafe-inline';">
         <title>开发流程引导器</title>
         <link rel="stylesheet" href="${styleMainUri}">
       </head>
@@ -371,8 +393,6 @@ export class DevFlowHtmlGenerator {
    */
   public getResourceUri(relativePath: string): vscode.Uri {
     // 使用VSCode官方推荐的方式获取WebView资源URI
-    return vscode.Uri.file(path.join(this.extensionUri.fsPath, relativePath)).with({
-      scheme: 'vscode-resource'
-    });
+    return vscode.Uri.joinPath(this.extensionUri, relativePath);
   }
 }

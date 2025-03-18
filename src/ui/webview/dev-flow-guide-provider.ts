@@ -46,6 +46,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       ]
     };
     
+    // 设置HTML生成器的webview
+    this._htmlGenerator.setWebview(webviewView.webview);
+    
     // 根据当前状态决定显示欢迎页还是步骤页
     const flowState = this._stateManager.state;
     if (flowState.flowId) {
@@ -149,7 +152,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; img-src vscode-resource: https:;">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this._view.webview.cspSource} 'unsafe-inline'; img-src ${this._view.webview.cspSource} https:;">
         <title>开发流程引导器</title>
         <link rel="stylesheet" href="${styleMainUri}">
       </head>
