@@ -79,8 +79,25 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
             this._resetFlow();
             this._showWelcomePage();
             break;
+          case 'newFlow':
+            // 显示欢迎页面，开始新的流程
+            this._resetFlow();
+            this._showWelcomePage();
+            break;
           case 'completeStep':
-            await this._completeCurrentStep(message.output || {});
+            // 显示要求输入目录路径的输入框
+            const outputPath = await vscode.window.showInputBox({
+              prompt: '请输入此步骤的输出目录路径（相对于项目根目录）',
+              placeHolder: '例如: docs/产品经理',
+              ignoreFocusOut: true, // 防止用户切换窗口时输入框关闭
+            });
+            
+            if (outputPath !== undefined) {
+              await this._completeCurrentStep({ outputPath });
+              
+              // 显示通知
+              vscode.window.showInformationMessage(`步骤已完成，输出将保存在 ${outputPath} 目录`);
+            }
             break;
           case 'applyRolePrompt':
             await this._applyRolePrompt(message.roleId);
@@ -104,11 +121,69 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
   }
   
   /**
+   * 向WebView发送消息
+   * @param command 命令
+   * @param data 数据
+   */
+  private _postMessage(command: string, data: any = {}): void {
+    if (this._view) {
+      this._view.webview.postMessage({ command, ...data });
+    }
+  }
+
+  /**
+   * 显示加载指示器
+   * @param message 加载提示信息
+   */
+  private _showLoading(message: string = '正在加载...'): void {
+    if (!this._view) {
+      return;
+    }
+    
+    const styleMainUri = this._htmlGenerator.getResourceUri('media/styles.css');
+    
+    this._view.webview.html = `
+      <!DOCTYPE html>
+      <html lang="zh-CN">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>开发流程引导器</title>
+        <link rel="stylesheet" href="${styleMainUri}">
+      </head>
+      <body>
+        <div class="container">
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">${message}</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+  
+  /**
    * 启动新流程
    * @param flowId 流程ID
    */
   private async _startNewFlow(flowId: string): Promise<void> {
     try {
+      // 显示加载指示器
+      this._showLoading('正在准备项目流程...');
+      
+      // 获取项目想法
+      const userIdea = await vscode.window.showInputBox({
+        prompt: '请输入您的项目/产品想法',
+        placeHolder: '例如: 一个帮助开发者管理代码片段的工具',
+        ignoreFocusOut: true
+      });
+      
+      if (!userIdea) {
+        this._showWelcomePage();
+        return;
+      }
+      
       // 重置当前流程状态
       this._stateManager.resetState();
       
@@ -198,6 +273,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
    */
   private async _moveToNextStep(): Promise<void> {
     try {
+      // 显示加载指示器
+      this._showLoading('准备下一步...');
+      
       const flowState = this._stateManager.state;
       const workflow = this._workflowService.getWorkflowById(flowState.flowId);
       
@@ -215,6 +293,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
    */
   private async _moveToPrevStep(): Promise<void> {
     try {
+      // 显示加载指示器
+      this._showLoading('返回上一步...');
+      
       const flowState = this._stateManager.state;
       const workflow = this._workflowService.getWorkflowById(flowState.flowId);
       
@@ -239,6 +320,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
    */
   private async _completeCurrentStep(output: Record<string, any>): Promise<void> {
     try {
+      // 显示加载指示器
+      this._showLoading('保存步骤进度...');
+      
       const flowState = this._stateManager.state;
       const workflow = this._workflowService.getWorkflowById(flowState.flowId);
       
@@ -264,6 +348,9 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
    */
   private async _applyRolePrompt(roleId: string): Promise<void> {
     try {
+      // 显示加载指示器
+      this._showLoading('应用角色提示词...');
+      
       const promptContent = await this._promptService.getPromptContent(roleId);
       if (promptContent) {
         await insertPromptToChat(promptContent);

@@ -21,13 +21,34 @@ export class DevFlowHtmlGenerator {
     const styleMainUri = this.getResourceUri('media/styles.css');
     
     // 构建工作流卡片HTML
-    const workflowCardsHtml = workflows.map(workflow => `
-      <div class="workflow-card" data-workflow-id="${workflow.id}">
-        <h3>${workflow.name}</h3>
-        <p>${workflow.description}</p>
-        <button class="start-workflow-btn">启动流程</button>
-      </div>
-    `).join('');
+    const workflowCardsHtml = workflows.map(workflow => {
+      // 根据工作流类型选择图标
+      let workflowIcon = '📋';
+      if (workflow.id.includes('front') || workflow.id.includes('web')) {
+        workflowIcon = '🖥️';
+      } else if (workflow.id.includes('vscode') || workflow.id.includes('extension')) {
+        workflowIcon = '🧩';
+      } else if (workflow.id.includes('browser')) {
+        workflowIcon = '🌐';
+      } else if (workflow.id.includes('server') || workflow.id.includes('backend')) {
+        workflowIcon = '⚙️';
+      }
+      
+      // 获取步骤数量
+      const stepsCount = workflow.steps.length;
+      
+      return `
+        <div class="workflow-card" data-workflow-id="${workflow.id}">
+          <div class="workflow-icon">${workflowIcon}</div>
+          <h3>${workflow.name}</h3>
+          <p>${workflow.description}</p>
+          <div class="workflow-meta">
+            <span class="workflow-steps">${stepsCount} 个步骤</span>
+          </div>
+          <button class="start-workflow-btn">启动流程</button>
+        </div>
+      `;
+    }).join('');
     
     // 构建错误提示HTML
     const errorHtml = errorMessage ? `
@@ -48,13 +69,18 @@ export class DevFlowHtmlGenerator {
       <body>
         <div class="container">
           <div class="welcome-section">
-            <h2>项目开发流程</h2>
-            <p>选择一个流程来开始您的项目开发</p>
+            <h2>项目开发流程引导器</h2>
+            <p>选择一个流程开始您的项目开发之旅。每个流程将引导您完成从构思到实现的全部步骤。</p>
             ${errorHtml}
           </div>
           
           <div class="workflows-container">
             ${workflowCardsHtml}
+          </div>
+          
+          <div class="welcome-footer">
+            <p class="tip-text">💡 提示：每个流程都由专业角色提供指导，帮助您一步步完成项目开发。</p>
+            <p class="tip-text">💾 您的进度将自动保存，可以随时继续上次的工作。</p>
           </div>
         </div>
         
@@ -72,6 +98,11 @@ export class DevFlowHtmlGenerator {
                   flowId: workflowId
                 });
               });
+            });
+            
+            // 添加淡入动画效果
+            document.querySelectorAll('.workflow-card').forEach((card, index) => {
+              card.style.animationDelay = `${index * 0.1}s`;
             });
           })();
         </script>
@@ -217,9 +248,33 @@ export class DevFlowHtmlGenerator {
     
     return roleIds.map((roleId, index) => {
       const roleName = roleNames[index] || extractRoleNameFromId(roleId);
+      
+      // 增加角色图标，根据角色名称选择不同的图标
+      let roleIcon = '👤';
+      
+      if (roleName.includes('产品')) {
+        roleIcon = '📝';
+      } else if (roleName.includes('架构')) {
+        roleIcon = '🏗️';
+      } else if (roleName.includes('设计')) {
+        roleIcon = '🎨';
+      } else if (roleName.includes('前端')) {
+        roleIcon = '🖥️';
+      } else if (roleName.includes('后端')) {
+        roleIcon = '⚙️';
+      } else if (roleName.includes('全栈')) {
+        roleIcon = '🔄';
+      } else if (roleName.includes('测试')) {
+        roleIcon = '🧪';
+      } else if (roleName.includes('运维') || roleName.includes('DevOps')) {
+        roleIcon = '🚀';
+      } else if (roleName.includes('数据库')) {
+        roleIcon = '💾';
+      }
+      
       return `
         <div class="role-card" data-role-id="${roleId}">
-          <div class="role-icon">👤</div>
+          <div class="role-icon">${roleIcon}</div>
           <div class="role-name">${roleName}</div>
           <div class="role-action">应用</div>
         </div>
@@ -248,11 +303,30 @@ export class DevFlowHtmlGenerator {
         <div class="container">
           <div class="completion-container">
             <div class="completion-icon">🎉</div>
-            <h2>恭喜，您已完成 ${workflow.name} 流程！</h2>
-            <p>您已经成功完成了所有开发步骤。</p>
+            <h2 class="completion-title">项目开发流程已完成！</h2>
+            <p class="completion-message">
+              恭喜！您已成功完成了 <strong>${workflow.name}</strong> 的全部开发步骤。
+              您的项目已经从构思阶段经历了完整的开发流程，建议查看各步骤生成的文档和代码，以便继续完善您的项目。
+            </p>
+            
+            <div class="completion-summary">
+              <h3>流程回顾</h3>
+              <div class="steps-summary">
+                ${workflow.steps.map((step, index) => `
+                  <div class="step-item">
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-content">
+                      <div class="step-name">${step.name}</div>
+                      <div class="step-role">角色：${extractRoleNameFromId(step.role)}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
             
             <div class="completion-actions">
-              <button class="reset-btn">重新开始</button>
+              <button class="new-flow-btn">开始新的项目流程</button>
+              <button class="reset-btn">重新开始当前流程</button>
             </div>
           </div>
         </div>
@@ -263,9 +337,23 @@ export class DevFlowHtmlGenerator {
             
             // 重置按钮点击处理
             document.querySelector('.reset-btn').addEventListener('click', () => {
+              if (confirm('确定要重置当前流程吗？这将清除所有进度。')) {
+                vscode.postMessage({
+                  command: 'resetFlow'
+                });
+              }
+            });
+            
+            // 新流程按钮点击处理
+            document.querySelector('.new-flow-btn').addEventListener('click', () => {
               vscode.postMessage({
-                command: 'resetFlow'
+                command: 'newFlow'
               });
+            });
+            
+            // 添加淡入动画效果
+            document.querySelectorAll('.step-item').forEach((item, index) => {
+              item.style.animationDelay = `${index * 0.1}s`;
             });
           })();
         </script>
@@ -278,7 +366,7 @@ export class DevFlowHtmlGenerator {
    * 获取资源URI
    * @param relativePath 相对路径
    */
-  private getResourceUri(relativePath: string): vscode.Uri {
+  public getResourceUri(relativePath: string): vscode.Uri {
     return this.extensionUri
       .with({ path: path.join(this.extensionUri.path, relativePath) });
   }
