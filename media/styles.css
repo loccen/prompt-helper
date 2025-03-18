@@ -557,6 +557,86 @@ button:disabled {
   color: #e0e0e0;
 }
 
+/* 暗色主题下步骤视图页面文字优化 */
+.vscode-dark .header h2,
+.vscode-dark .roles-section h3,
+.vscode-dark .step-title {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.vscode-dark .step-description {
+  color: #e0e0e0 !important;
+}
+
+/* 暗色主题下完成页面文字优化 */
+.vscode-dark .completion-container .completion-title {
+  color: #4AEF4A;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.vscode-dark .completion-container .completion-message,
+.vscode-dark .completion-summary h3 {
+  color: #ffffff;
+}
+
+.vscode-dark .step-content .step-name {
+  color: #e0e0e0;
+}
+
+.vscode-dark .step-content .step-role {
+  color: #cccccc;
+}
+
+/* 暗色主题下工作流卡片文字优化 */
+.vscode-dark .workflow-card p {
+  color: #e0e0e0 !important;
+}
+
+.vscode-dark .workflow-card h3 {
+  color: #a0c0ff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 暗色主题下角色卡片文字优化 */
+.vscode-dark .role-name {
+  color: #e0e0e0;
+}
+
+.vscode-dark .role-action {
+  background-color: rgba(74, 107, 239, 0.3);
+  color: #ffffff;
+}
+
+/* 暗色主题下提示文本优化 */
+.vscode-dark .tip-text,
+.vscode-dark .workflow-meta, 
+.vscode-dark .workflow-steps,
+.vscode-dark .no-roles,
+.vscode-dark .step-info {
+  color: #cccccc;
+}
+
+/* 暗色主题下错误消息文本优化 */
+.vscode-dark .error-message p {
+  color: #ff8080;
+}
+
+/* 暗色主题下加载指示器文本优化 */
+.vscode-dark .loading-text {
+  color: #e0e0e0;
+}
+
+/* 优化暗色主题下按钮文字 */
+.vscode-dark .prev-btn,
+.vscode-dark .next-btn,
+.vscode-dark .complete-btn,
+.vscode-dark .reset-btn,
+.vscode-dark .new-flow-btn,
+.vscode-dark .start-workflow-btn {
+  font-weight: 500;
+}
+
 /* 动画效果 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
