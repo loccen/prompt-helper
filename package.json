@@ -78,6 +78,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.11.25",
     "@types/vscode": "^1.85.0",
     "typescript": "^5.3.3"

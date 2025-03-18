@@ -102,7 +102,7 @@ export class DevFlowHtmlGenerator {
             
             // 添加淡入动画效果
             document.querySelectorAll('.workflow-card').forEach((card, index) => {
-              card.style.animationDelay = `${index * 0.1}s`;
+              card.style.animationDelay = index * 0.1 + 's';
             });
           })();
         </script>
@@ -353,7 +353,7 @@ export class DevFlowHtmlGenerator {
             
             // 添加淡入动画效果
             document.querySelectorAll('.step-item').forEach((item, index) => {
-              item.style.animationDelay = `${index * 0.1}s`;
+              item.style.animationDelay = index * 0.1 + 's';
             });
           })();
         </script>

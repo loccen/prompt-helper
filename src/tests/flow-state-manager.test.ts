@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
+import { suite, test, setup } from 'mocha';
 import { FlowStateManager } from '../ui/webview/flow-state-manager';
 
 // 创建Mock ExtensionContext
