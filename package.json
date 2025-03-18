@@ -33,7 +33,7 @@
       "activitybar": [
         {
           "id": "prompt-helper",
-          "title": "角色提示词",
+          "title": "角色提示词助手",
           "icon": "resources/icon.svg"
         }
       ]
