@@ -6,7 +6,7 @@
   "engines": {
     "vscode": "^1.85.0"
   },
-  "publisher": "your-publisher-name",
+  "publisher": "loccen",
   "categories": [
     "Other"
   ],
