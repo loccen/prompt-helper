@@ -1,0 +1,44 @@
+name: 测试
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest  # 使用Windows环境，与开发平台一致
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v2
+      
+      - name: 设置Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          cache: 'npm'
+      
+      - name: 安装依赖
+        run: npm ci
+      
+      - name: 编译项目
+        run: npm run compile
+      
+      - name: 运行测试
+        run: npm test
+      
+      - name: 生成覆盖率报告
+        run: npm run test:coverage
+      
+      - name: 上传覆盖率报告
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage/
+      
+      - name: 发布覆盖率结果
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true 

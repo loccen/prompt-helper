@@ -5,12 +5,62 @@
 
 import * as vscode from '../mocks/vscode';
 
+// 导出为TestUtils对象，使其它测试可以更方便地导入
+export const TestUtils = {
+  createMockExtensionContext,
+  wait,
+  mockUserInput,
+  captureConsoleOutput,
+  createMockWebviewPanel,
+  createMockWebviewView,
+  resetVSCodeMocks
+};
+
 /**
  * 创建模拟的 VSCode 扩展上下文
  * @returns 模拟的扩展上下文
  */
 export function createMockExtensionContext() {
-  return new vscode.ExtensionContext();
+  // 创建模拟的globalState
+  const mockGlobalState = {
+    get: jest.fn(),
+    update: jest.fn(),
+    keys: jest.fn().mockReturnValue([])
+  };
+  
+  // 创建模拟的Uri
+  const uri = {
+    fsPath: '/mock/extension/path',
+    scheme: 'file',
+    path: '/mock/extension/path',
+    query: '',
+    fragment: '',
+    with: jest.fn().mockReturnThis(),
+    toString: jest.fn().mockReturnValue('/mock/extension/path')
+  };
+  
+  return {
+    extensionPath: '/mock/extension/path',
+    extensionUri: uri,
+    globalState: mockGlobalState,
+    workspaceState: mockGlobalState, // 可以复用globalState的mock
+    subscriptions: [],
+    asAbsolutePath: jest.fn().mockImplementation(relativePath => `/mock/extension/path/${relativePath}`),
+    storageUri: uri,
+    globalStorageUri: uri,
+    logUri: uri,
+    extensionMode: 1, // ExtensionMode.Production
+    environmentVariableCollection: {
+      persistent: false,
+      replace: jest.fn(),
+      append: jest.fn(),
+      prepend: jest.fn(),
+      get: jest.fn(),
+      forEach: jest.fn(),
+      delete: jest.fn(),
+      clear: jest.fn()
+    }
+  };
 }
 
 /**
@@ -96,6 +146,47 @@ export function createMockWebviewPanel() {
     postMessageSpy,
     onDidReceiveMessageSpy,
     disposeSpy,
+    triggerMessageFromWebview
+  };
+}
+
+/**
+ * 创建模拟的 WebviewView
+ * @returns 模拟的 WebviewView
+ */
+export function createMockWebviewView() {
+  const postMessageSpy = jest.fn().mockResolvedValue(true);
+  const onDidReceiveMessageSpy = jest.fn();
+  
+  const webviewView = {
+    viewType: 'test.webviewView',
+    title: 'Test WebviewView',
+    description: 'Test Description',
+    visible: true,
+    show: jest.fn(),
+    webview: {
+      html: '',
+      options: { enableScripts: true },
+      postMessage: postMessageSpy,
+      onDidReceiveMessage: onDidReceiveMessageSpy,
+      asWebviewUri: (uri: vscode.Uri) => uri,
+      cspSource: 'https://test-csp-source'
+    },
+    onDidDispose: jest.fn(),
+    onDidChangeVisibility: jest.fn()
+  };
+  
+  // 模拟触发消息处理
+  const triggerMessageFromWebview = (message: any) => {
+    const handlers = onDidReceiveMessageSpy.mock.calls
+      .map(call => call[0])
+      .filter(handler => typeof handler === 'function');
+    
+    handlers.forEach(handler => handler(message));
+  };
+  
+  return {
+    ...webviewView,
     triggerMessageFromWebview
   };
 }

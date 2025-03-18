@@ -4,37 +4,44 @@
  */
 
 export class Uri {
-  public readonly scheme: string;
-  public readonly path: string;
-  public readonly fsPath: string;
-  
-  constructor(scheme: string, path: string) {
-    this.scheme = scheme;
-    this.path = path;
-    this.fsPath = path;
+  static parse(value: string): Uri {
+    return new Uri(value);
   }
   
-  public with(change: { scheme?: string; path?: string }): Uri {
-    return new Uri(
-      change.scheme || this.scheme,
-      change.path || this.path
-    );
+  static file(path: string): Uri {
+    return new Uri(`file://${path}`);
   }
   
-  public toString(): string {
-    return `${this.scheme}://${this.path}`;
+  static joinPath(base: Uri, ...pathSegments: string[]): Uri {
+    const path = pathSegments.join('/');
+    return new Uri(`${base.toString()}/${path}`);
   }
   
-  public static file(path: string): Uri {
-    return new Uri('file', path);
+  scheme: string = 'file';
+  authority: string = '';
+  path: string = '';
+  query: string = '';
+  fragment: string = '';
+  fsPath: string = '';
+  
+  constructor(value: string) {
+    this.fsPath = value.replace(/^file:\/\//, '');
+    this.path = this.fsPath;
   }
   
-  public static parse(uri: string): Uri {
-    const match = uri.match(/^([a-z]+):\/\/(.+)$/);
-    if (match) {
-      return new Uri(match[1], match[2]);
+  with(change: { scheme?: string; authority?: string; path?: string; query?: string; fragment?: string }): Uri {
+    if (change.scheme) {
+      this.scheme = change.scheme;
     }
-    return new Uri('file', uri);
+    if (change.path) {
+      this.path = change.path;
+      this.fsPath = change.path;
+    }
+    return this;
+  }
+  
+  toString(): string {
+    return `${this.scheme}://${this.path}`;
   }
 }
 
