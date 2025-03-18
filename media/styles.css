@@ -183,16 +183,31 @@ button:disabled {
   margin-bottom: 20px;
 }
 
+/* 重置按钮样式 */
 .reset-btn {
-  background-color: var(--light-color);
-  color: var(--danger-color);
-  font-size: 12px;
-  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 16px;
+  transition: background-color 0.2s;
+  font-size: 14px;
 }
 
 .reset-btn:hover {
-  background-color: var(--danger-color);
+  background-color: #c0392b;
+}
+
+.vscode-dark .reset-btn {
+  background-color: #e74c3c;
   color: white;
+}
+
+.vscode-dark .reset-btn:hover {
+  background-color: #c0392b;
 }
 
 .progress-container {
@@ -624,7 +639,7 @@ button:disabled {
 
 /* 暗色主题下加载指示器文本优化 */
 .vscode-dark .loading-text {
-  color: #e0e0e0;
+  color: var(--gray-400);
 }
 
 /* 优化暗色主题下按钮文字 */
@@ -708,4 +723,30 @@ button:focus, .role-card:focus {
 
 .vscode-dark .loading-text {
   color: var(--gray-400);
+}
+
+/* 加载界面取消按钮样式 */
+.cancel-btn {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background-color: #f3f3f3;
+  color: #333;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.cancel-btn:hover {
+  background-color: #e7e7e7;
+}
+
+.vscode-dark .cancel-btn {
+  background-color: #3a3d41;
+  color: #e0e0e0;
+  border-color: #4a4d51;
+}
+
+.vscode-dark .cancel-btn:hover {
+  background-color: #45484d;
 } 

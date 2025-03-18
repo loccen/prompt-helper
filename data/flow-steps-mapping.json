@@ -2,28 +2,28 @@
   "standard-project": {
     "steps": [
       {
-        "id": "requirements-analysis",
+        "id": "step-1",
         "name": "需求分析",
         "description": "明确项目目标和功能需求",
         "recommendedRoles": ["1-产品经理角色提示词"],
         "outputArtifacts": ["需求文档", "用户故事"]
       },
       {
-        "id": "architecture-design",
+        "id": "step-2",
         "name": "架构设计",
         "description": "设计系统架构和技术方案",
         "recommendedRoles": ["2-系统架构师角色提示词"],
         "outputArtifacts": ["架构文档", "技术方案"]
       },
       {
-        "id": "development",
+        "id": "step-3",
         "name": "开发实现",
         "description": "编写代码实现功能",
         "recommendedRoles": ["6-0-后端开发工程师角色提示词", "5-1-Web前端开发工程师角色提示词"],
         "outputArtifacts": ["源代码", "API文档"]
       },
       {
-        "id": "testing",
+        "id": "step-4",
         "name": "测试验证",
         "description": "测试功能和性能",
         "recommendedRoles": ["7-测试工程师角色提示词"],
@@ -34,21 +34,21 @@
   "frontend-project": {
     "steps": [
       {
-        "id": "requirements-analysis",
+        "id": "step-1",
         "name": "需求分析",
         "description": "明确前端项目的目标和功能需求",
         "recommendedRoles": ["1-产品经理角色提示词"],
         "outputArtifacts": ["需求文档", "用户故事"]
       },
       {
-        "id": "ui-design",
+        "id": "step-2",
         "name": "UI设计",
         "description": "设计用户界面和交互流程",
         "recommendedRoles": ["3-UI设计师角色提示词"],
         "outputArtifacts": ["界面原型", "设计规范"]
       },
       {
-        "id": "frontend-development",
+        "id": "step-3",
         "name": "前端开发",
         "description": "实现前端界面和交互",
         "recommendedRoles": ["5-1-Web前端开发工程师角色提示词"],
@@ -59,21 +59,21 @@
   "vscode-plugin": {
     "steps": [
       {
-        "id": "requirements-analysis",
+        "id": "step-1",
         "name": "需求分析",
         "description": "明确VSCode插件的目标和功能需求",
         "recommendedRoles": ["1-产品经理角色提示词", "9-2-VSCode插件开发工程师角色提示词"],
         "outputArtifacts": ["需求文档", "功能列表"]
       },
       {
-        "id": "plugin-design",
+        "id": "step-2",
         "name": "插件设计",
         "description": "设计插件架构和功能模块",
         "recommendedRoles": ["9-2-VSCode插件开发工程师角色提示词", "2-系统架构师角色提示词"],
         "outputArtifacts": ["架构文档", "API设计"]
       },
       {
-        "id": "plugin-development",
+        "id": "step-3",
         "name": "插件开发",
         "description": "实现插件功能",
         "recommendedRoles": ["9-2-VSCode插件开发工程师角色提示词"],
@@ -84,25 +84,64 @@
   "browser-extension": {
     "steps": [
       {
-        "id": "requirements-analysis",
+        "id": "step-1",
         "name": "需求分析",
         "description": "明确浏览器插件的目标和功能需求",
         "recommendedRoles": ["1-产品经理角色提示词", "9-1-浏览器插件开发工程师角色提示词"],
         "outputArtifacts": ["需求文档", "功能列表"]
       },
       {
-        "id": "extension-design",
+        "id": "step-2",
         "name": "插件设计",
         "description": "设计插件架构和功能模块",
         "recommendedRoles": ["9-1-浏览器插件开发工程师角色提示词", "2-系统架构师角色提示词"],
         "outputArtifacts": ["架构文档", "API设计"]
       },
       {
-        "id": "extension-development",
+        "id": "step-3",
         "name": "插件开发",
         "description": "实现插件功能",
         "recommendedRoles": ["9-1-浏览器插件开发工程师角色提示词", "5-1-Web前端开发工程师角色提示词"],
         "outputArtifacts": ["插件源码", "manifest.json"]
+      }
+    ]
+  },
+  "desktop-app": {
+    "steps": [
+      {
+        "id": "step-1",
+        "name": "需求分析",
+        "description": "明确桌面应用的目标和功能需求",
+        "recommendedRoles": ["1-产品经理角色提示词"],
+        "outputArtifacts": ["需求文档", "功能列表"]
+      },
+      {
+        "id": "step-2",
+        "name": "架构设计",
+        "description": "设计桌面应用整体架构和技术方案",
+        "recommendedRoles": ["2-系统架构师角色提示词"],
+        "outputArtifacts": ["架构文档", "技术方案"]
+      },
+      {
+        "id": "step-3",
+        "name": "UI设计",
+        "description": "设计桌面应用界面和交互体验",
+        "recommendedRoles": ["3-2-桌面应用UI设计师角色提示词", "3-UI设计师角色提示词"],
+        "outputArtifacts": ["界面原型", "设计规范"]
+      },
+      {
+        "id": "step-4",
+        "name": "Tauri应用开发",
+        "description": "使用Tauri框架实现桌面应用功能",
+        "recommendedRoles": ["6-8-桌面应用-Tauri工程师角色提示词", "5-1-Web前端开发工程师角色提示词"],
+        "outputArtifacts": ["源代码", "构建配置"]
+      },
+      {
+        "id": "step-5",
+        "name": "测试验证",
+        "description": "测试桌面应用功能和性能",
+        "recommendedRoles": ["7-测试工程师角色提示词"],
+        "outputArtifacts": ["测试报告", "Bug列表"]
       }
     ]
   }

@@ -232,11 +232,9 @@ export class DevFlowHtmlGenerator {
             
             // 重置按钮点击处理
             document.querySelector('.reset-btn').addEventListener('click', () => {
-              if (confirm('确定要重置当前流程吗？这将清除所有进度。')) {
-                vscode.postMessage({
-                  command: 'resetFlow'
-                });
-              }
+              vscode.postMessage({
+                command: 'confirmResetFlow'
+              });
             });
             
             // 角色卡片点击处理
@@ -362,11 +360,9 @@ export class DevFlowHtmlGenerator {
             
             // 重置按钮点击处理
             document.querySelector('.reset-btn').addEventListener('click', () => {
-              if (confirm('确定要重置当前流程吗？这将清除所有进度。')) {
-                vscode.postMessage({
-                  command: 'resetFlow'
-                });
-              }
+              vscode.postMessage({
+                command: 'confirmResetFlow'
+              });
             });
             
             // 新流程按钮点击处理
