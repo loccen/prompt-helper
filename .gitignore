@@ -4,6 +4,7 @@ dist/
 
 # 依赖目录
 node_modules/
+coverage/
 
 # VSCode 扩展打包文件
 *.vsix
