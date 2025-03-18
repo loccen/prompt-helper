@@ -149,6 +149,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' vscode-resource:; img-src vscode-resource: https:;">
         <title>开发流程引导器</title>
         <link rel="stylesheet" href="${styleMainUri}">
       </head>
