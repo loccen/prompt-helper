@@ -141,7 +141,7 @@ export class DevFlowGuideProvider implements vscode.WebviewViewProvider {
       return;
     }
     
-    const styleMainUri = this._htmlGenerator.getResourceUri('resources/media/styles.css');
+    const styleMainUri = this._htmlGenerator.getResourceUri('media/styles.css');
     
     this._view.webview.html = `
       <!DOCTYPE html>
