@@ -65,7 +65,7 @@ export class PromptTreeProvider implements vscode.TreeDataProvider<PromptTreeIte
           role.id,
           role.filePath,
           {
-            command: 'prompt-helper.insertPrompt',
+            command: 'PromptMaster.insertPrompt',
             title: '插入提示词',
             arguments: [role.id]
           }

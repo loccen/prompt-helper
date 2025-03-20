@@ -76,7 +76,7 @@ describe('PromptTreeProvider', () => {
     expect(role1?.collapsibleState).toBe(vscode.TreeItemCollapsibleState.None);
     expect(role1?.id).toBe('role1');
     expect(role1?.command).toBeDefined();
-    expect(role1?.command?.command).toBe('prompt-helper.insertPrompt');
+    expect(role1?.command?.command).toBe('PromptMaster.insertPrompt');
     expect(role1?.command?.arguments).toEqual(['role1']);
   });
   

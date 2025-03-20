@@ -70,7 +70,7 @@ export class WorkflowTreeProvider implements vscode.TreeDataProvider<WorkflowTre
             workflow.id,
             step.id,
             {
-              command: 'prompt-helper.insertPrompt',
+              command: 'PromptMaster.insertPrompt',
               title: '插入步骤提示词',
               arguments: [step.role]
             }

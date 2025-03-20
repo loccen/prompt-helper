@@ -5,7 +5,7 @@ import { DevFlowGuideProvider } from './ui/webview/dev-flow-guide-provider';
 import { insertPromptToChat, log, handleError } from './utils';
 
 export function activate(context: vscode.ExtensionContext) {
-  log('Prompt-Helper 插件已激活', true);
+  log('PromptMaster 插件已激活', true);
 
   try {
     // 创建服务层实例
@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     // 注册插入提示词命令
-    const insertPromptCommand = vscode.commands.registerCommand('prompt-helper.insertPrompt', async (roleId: string) => {
+    const insertPromptCommand = vscode.commands.registerCommand('PromptMaster.insertPrompt', async (roleId: string) => {
       try {
         const promptContent = await promptService.getPromptContent(roleId);
         if (promptContent) {
@@ -59,7 +59,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     // 注册启动项目开发流程命令
-    const startWorkflowCommand = vscode.commands.registerCommand('prompt-helper.projectWorkflow', async (workflowId?: string) => {
+    const startWorkflowCommand = vscode.commands.registerCommand('PromptMaster.projectWorkflow', async (workflowId?: string) => {
       try {
         if (!workflowId) {
           // 如果没有指定工作流，则显示选择对话框
@@ -100,9 +100,9 @@ export function activate(context: vscode.ExtensionContext) {
     });
     
     // 注册打开流程引导器命令
-    const openDevFlowGuideCommand = vscode.commands.registerCommand('prompt-helper.openDevFlowGuide', () => {
+    const openDevFlowGuideCommand = vscode.commands.registerCommand('PromptMaster.openDevFlowGuide', () => {
       try {
-        vscode.commands.executeCommand('workbench.view.extension.prompt-helper');
+        vscode.commands.executeCommand('workbench.view.extension.PromptMaster');
         vscode.commands.executeCommand('promptHelper.devFlowGuide.focus');
       } catch (error) {
         handleError(error, '打开流程引导器失败');
@@ -123,5 +123,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-  log('Prompt-Helper 插件已停用');
+  log('PromptMaster 插件已停用');
 } 

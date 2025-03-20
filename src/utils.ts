@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 // 创建输出通道用于记录日志
-const outputChannel = vscode.window.createOutputChannel('Prompt-Helper ');
+const outputChannel = vscode.window.createOutputChannel('PromptMaster ');
 
 /**
  * 记录日志到输出通道

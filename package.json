@@ -1,12 +1,17 @@
 {
-  "name": "prompt-helper",
-  "displayName": "Prompt-Helper ",
+  "name": "code-prompt-master",
+  "displayName": "PromptMaster ",
   "description": "在Cursor中按照项目开发流程引用预置角色提示词辅助项目开发",
   "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loccen/prompt-master"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
   "publisher": "loccen",
+  "license": "MIT",
   "categories": [
     "Other"
   ],
@@ -17,29 +22,29 @@
   "contributes": {
     "commands": [
       {
-        "command": "prompt-helper.insertPrompt",
+        "command": "PromptMaster.insertPrompt",
         "title": "插入角色提示词"
       },
       {
-        "command": "prompt-helper.projectWorkflow",
+        "command": "PromptMaster.projectWorkflow",
         "title": "启动项目开发流程"
       },
       {
-        "command": "prompt-helper.openDevFlowGuide",
+        "command": "PromptMaster.openDevFlowGuide",
         "title": "打开项目流程引导器"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "prompt-helper",
+          "id": "PromptMaster",
           "title": "角色提示词助手",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "views": {
-      "prompt-helper": [
+      "PromptMaster": [
         {
           "id": "promptRoles",
           "name": "角色列表"
@@ -58,12 +63,12 @@
     "menus": {
       "view/title": [
         {
-          "command": "prompt-helper.projectWorkflow",
+          "command": "PromptMaster.projectWorkflow",
           "when": "view == promptWorkflows",
           "group": "navigation"
         },
         {
-          "command": "prompt-helper.openDevFlowGuide",
+          "command": "PromptMaster.openDevFlowGuide",
           "when": "view == promptHelper.devFlowGuide",
           "group": "navigation"
         }

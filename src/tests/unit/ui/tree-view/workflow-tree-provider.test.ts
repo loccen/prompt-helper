@@ -123,7 +123,7 @@ describe('WorkflowTreeProvider', () => {
     expect(step1.workflowId).toBe('workflow1');
     expect(step1.stepId).toBe('step1');
     expect(step1.command).toBeDefined();
-    expect(step1.command?.command).toBe('prompt-helper.insertPrompt');
+    expect(step1.command?.command).toBe('PromptMaster.insertPrompt');
     expect(step1.command?.arguments).toEqual(['role1']);
   });
   
